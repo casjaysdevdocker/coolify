@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  coolify:
+    image: ghcr.io/coollabsio/coolify:latest
+    restart: always
+    container_name: coolify
+    privileged: true
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host
+    volumes:
+      - '/config/ssl:/app/ssl'
+      - '/config/traefik:/etc/traefik/acme'
+      - '/config/letsencrypt:/etc/letsencrypt'
+      - '/data/logs/coolify:/app/logs'
+      - '/data/db/sqlite3/coolify:/app/db'
+      - '/data/backups/coolify:/app/backups'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    env_file:
+      - '.env'
+    networks:
+      - coolify-infra
+
+  fluent-bit:
+    image: ghcr.io/coollabsio/fluent-bit:latest
+    container_name: coolify-fluentbit
+    volumes:
+      - '/data/logs/fluentbit:/app/logs'
+    networks:
+      - coolify-infra
+
+  portainer:
+    image: cr.portainer.io/portainer/portainer-ce:latest
+    restart: always
+    container_name: coolify
+    privileged: true
+    command: --logo https://avatars.githubusercontent.com/u/69495418
+    ports:
+      - "9000:9000"
+      - "8000:8000"
+    volumes:
+      - '/data/portainer:/data'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - coolify-infra
+
+networks:
+  coolify-infra:
+    attachable: true
+    name: coolify-infra
