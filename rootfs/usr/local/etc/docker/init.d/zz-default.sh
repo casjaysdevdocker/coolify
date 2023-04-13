@@ -44,13 +44,13 @@ ROOT_FILE_PREFIX="/config/secure/auth/root" # directory to save username/passwor
 USER_FILE_PREFIX="/config/secure/auth/user" # directory to save username/password for normal user
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # set the database directory
-DATABASE_DIR="${DATABASE_DIR_COOLIFY:-/data/db/coolify}"
+DATABASE_DIR="${DATABASE_DIR_COOLIFY:-/data/db/sqlite3/coolify}"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional predefined variables
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # port which service is listening on
-SERVICE_PORT=""
+SERVICE_PORT="3000,9000"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # execute command variables
 SERVICE_UID="0"                         # set the user id
@@ -66,7 +66,10 @@ IS_WEB_SERVER="no"
 IS_DATABASE_SERVICE="no"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional variables
-
+COOLIFY_SECRET_KEY="${ENV_COOLIFY_SECRET_KEY:-$(__random_password 32)}"
+COOLIFY_DATABASE_URL="${ENV_COOLIFY_DATABASE_URL:-$DATABASE_DIR/prod.db}"
+COOLIFY_WHITE_LABELED_ICON="${ENV_COOLIFY_WHITE_LABELED_ICON:-$COOLIFY_WHITE_LABELED_ICON}"
+export COOLIFY_SECRET_KEY COOLIFY_DATABASE_URL COOLIFY_WHITE_LABELED_ICON
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # usernames
 user_name="${COOLIFY_USER_NAME:-}"           # normal user name
@@ -155,7 +158,7 @@ __post_execute() {
   sleep 60                           # how long to wait before executing
   echo "Running post commands"       # message
   # execute commands
-  docker compose -f "/root/coolify.yaml" up -d --pull always
+  docker compose -f "/root/coolify.yaml" up
   return $exitCode
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

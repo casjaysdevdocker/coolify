@@ -7,10 +7,7 @@ services:
     container_name: coolify
     privileged: true
     ports:
-      - target: 3000
-        published: 3000
-        protocol: tcp
-        mode: host
+      - '3000:3000'
     volumes:
       - '/config/ssl:/app/ssl'
       - '/config/traefik:/etc/traefik/acme'
@@ -19,13 +16,20 @@ services:
       - '/data/db/sqlite3/coolify:/app/db'
       - '/data/backups/coolify:/app/backups'
       - '/var/run/docker.sock:/var/run/docker.sock'
-
+    environment:
+      - COOLIFY_APP_ID=
+      - COOLIFY_IS_ON=docker
+      - COOLIFY_AUTO_UPDATE=false
+      - COOLIFY_WHITE_LABELED=true
+      - COOLIFY_SECRET_KEY="$COOLIFY_SECRET_KEY"
+      - COOLIFY_DATABASE_URL="file:$COOLIFY_DATABASE_URL"
+      - COOLIFY_WHITE_LABELED_ICON=$COOLIFY_WHITE_LABELED_ICON
   fluent-bit:
     image: ghcr.io/coollabsio/fluent-bit:latest
     container_name: coolify-fluentbit
+    restart: always
     volumes:
       - '/data/logs/fluentbit:/app/logs'
-
   portainer:
     image: cr.portainer.io/portainer/portainer-ce:latest
     restart: always
@@ -38,3 +42,6 @@ services:
     volumes:
       - '/data/portainer:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'
+    environment:
+      - PORTAINER_ADMIN_NAME=root
+      - PORTAINER_ADMIN_PASS=password
