@@ -19,21 +19,17 @@ services:
       - '/data/db/sqlite3/coolify:/app/db'
       - '/data/backups/coolify:/app/backups'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    networks:
-      - coolify-infra
 
   fluent-bit:
     image: ghcr.io/coollabsio/fluent-bit:latest
     container_name: coolify-fluentbit
     volumes:
       - '/data/logs/fluentbit:/app/logs'
-    networks:
-      - coolify-infra
 
   portainer:
     image: cr.portainer.io/portainer/portainer-ce:latest
     restart: always
-    container_name: coolify
+    container_name: portainer
     privileged: true
     command: --logo https://avatars.githubusercontent.com/u/69495418
     ports:
@@ -42,10 +38,3 @@ services:
     volumes:
       - '/data/portainer:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    networks:
-      - coolify-infra
-
-networks:
-  coolify-infra:
-    attachable: true
-    name: coolify-infra
