@@ -43,5 +43,5 @@ services:
       - '/data/portainer:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'
     environment:
-      - PORTAINER_ADMIN_NAME=root
-      - PORTAINER_ADMIN_PASS=password
+      PORTAINER_ADMIN_NAME: root
+      PORTAINER_ADMIN_PASS: portainer_password
