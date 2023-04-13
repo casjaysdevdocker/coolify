@@ -19,8 +19,6 @@ services:
       - '/data/db/sqlite3/coolify:/app/db'
       - '/data/backups/coolify:/app/backups'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    env_file:
-      - '.env'
     networks:
       - coolify-infra
 
@@ -39,8 +37,8 @@ services:
     privileged: true
     command: --logo https://avatars.githubusercontent.com/u/69495418
     ports:
-      - "9000:9000"
-      - "8000:8000"
+      - '9000:9000'
+      - '8000:8000'
     volumes:
       - '/data/portainer:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'

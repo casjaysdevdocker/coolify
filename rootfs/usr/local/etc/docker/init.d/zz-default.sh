@@ -155,7 +155,7 @@ __post_execute() {
   sleep 60                           # how long to wait before executing
   echo "Running post commands"       # message
   # execute commands
-  docker compose up -f "/root/coolify.yaml" -d --pull always
+  docker compose -f "/root/coolify.yaml" up -d --pull always
   return $exitCode
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

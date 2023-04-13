@@ -15,8 +15,8 @@ ARG IMAGE_REPO="docker"
 ARG IMAGE_VERSION="latest"
 ARG CONTAINER_VERSION="${IMAGE_VERSION}"
 
-ARG SERVICE_PORT=""
-ARG EXPOSE_PORTS=""
+ARG SERVICE_PORT="3000"
+ARG EXPOSE_PORTS="3000 9000 8000"
 ARG PHP_VERSION=""
 
 ARG USER="root"
@@ -97,7 +97,7 @@ RUN set -ex ; \
   pip install certbot-dns-rfc2136
 
 RUN set -ex ; \
-  docker compose create -f "/root/coolify.yaml"
+  echo ""
 
 RUN set -ex ; \
   echo 'Running cleanup' ; \
