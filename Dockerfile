@@ -44,7 +44,7 @@ ARG DISTRO_VERSION
 ARG PHP_VERSION
 
 ARG PACK_LIST="bash bash-completion git curl wget sudo unzip iproute2 ssmtp openssl jq ca-certificates tzdata mailcap ncurses util-linux pciutils usbutils coreutils binutils findutils grep rsync zip certbot tini certbot py3-pip procps net-tools coreutils sed gawk grep attr findutils readline lsof less curl shadow \
-  docker-compose"
+  docker-cli-compose"
 
 ENV ENV=~/.bashrc
 ENV SHELL="/bin/sh"
@@ -97,7 +97,7 @@ RUN set -ex ; \
   pip install certbot-dns-rfc2136
 
 RUN set -ex ; \
-  echo
+  docker compose create -f "/root/coolify.yaml"
 
 RUN set -ex ; \
   echo 'Running cleanup' ; \
