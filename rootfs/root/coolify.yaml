@@ -6,16 +6,6 @@ services:
     restart: always
     container_name: coolify
     privileged: true
-    ports:
-      - '3000:3000'
-    volumes:
-      - '/config/ssl:/app/ssl'
-      - '/config/traefik:/etc/traefik/acme'
-      - '/config/letsencrypt:/etc/letsencrypt'
-      - '/data/logs/coolify:/app/logs'
-      - '/data/db/sqlite3/coolify:/app/db'
-      - '/data/backups/coolify:/app/backups'
-      - '/var/run/docker.sock:/var/run/docker.sock'
     environment:
       - COOLIFY_APP_ID=
       - COOLIFY_IS_ON=docker
@@ -24,24 +14,43 @@ services:
       - COOLIFY_SECRET_KEY=$COOLIFY_SECRET_KEY
       - COOLIFY_DATABASE_URL=file:$COOLIFY_DATABASE_URL
       - COOLIFY_WHITE_LABELED_ICON=$COOLIFY_WHITE_LABELED_ICON
+    ports:
+      - '3000:3000'
+      - '9001:9100'
+    volumes:
+      - '/config/ssl:/app/ssl'
+      - '/config/traefik:/etc/traefik/acme'
+      - '/config/letsencrypt:/etc/letsencrypt'
+      - '/data/logs/coolify:/app/logs'
+      - '/data/db/sqlite3/coolify:/app/db'
+      - '/data/backups/coolify:/app/backups'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - coolify-infra
   fluent-bit:
     image: ghcr.io/coollabsio/fluent-bit:latest
     container_name: coolify-fluentbit
     restart: always
     volumes:
       - '/data/logs/fluentbit:/app/logs'
+    networks:
+      - coolify-infra
   portainer:
     image: cr.portainer.io/portainer/portainer-ce:latest
     restart: always
     container_name: portainer
     privileged: true
-    command: --logo https://avatars.githubusercontent.com/u/69495418
+    command: --logo https://avatars.githubusercontent.com/u/69495418 --base-url /portainer --admin-password='$2y$05$f5bQ/VDMTmUKHs.go0DAN.UZuSIn5Z09RUouHrxNG/VrCBVk9d662'
     ports:
       - '9000:9000'
       - '8000:8000'
     volumes:
       - '/data/portainer:/data'
       - '/var/run/docker.sock:/var/run/docker.sock'
-    environment:
-      PORTAINER_ADMIN_NAME: root
-      PORTAINER_ADMIN_PASS: portainer_password
+    networks:
+      - coolify-infra
+
+networks:
+  coolify-infra:
+    attachable: true
+    name: coolify-infra
