@@ -22,9 +22,10 @@ services:
       - '/config/traefik:/etc/traefik'
       - '/config/letsencrypt:/etc/letsencrypt'
       - '/data/logs/coolify:/app/logs'
-      - '/data/db/sqlite3/coolify:/app/db'
       - '/data/backups/coolify:/app/backups'
-      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/data/db/sqlite3/coolify:/data/db/sqlite3/coolify'
+      - '/data/docker/volumes/coolify:/var/lib/docker/volumes'
       - '/etc/docker/daemon.json:/etc/docker/daemon.json'
+      - '/var/run/docker.sock:/var/run/docker.sock'
     env_file:
       - $COOLIFY_ENV_FILE

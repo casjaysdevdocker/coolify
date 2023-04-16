@@ -109,7 +109,7 @@ RUN set -ex ; \
 
 RUN set -ex ; \
   echo 'Running cleanup' ; \
-  echo ""
+  find /etc -name '*.apk-new' -exec rm -fv {} + || true
 
 RUN set -ex ; \
   rm -Rf "/config" "/data" ; \
