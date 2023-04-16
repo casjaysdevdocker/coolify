@@ -24,8 +24,8 @@ cat <<EOF | tee "/etc/docker/daemon.json" "/var/snap/docker/current/config/daemo
     "experimental": true,
     "log-driver": "json-file",
     "log-opts": {
-      "max-size": "100m",
-      "max-file": "5"
+      "max-size": "10m",
+      "max-file": "1"
     },
     "features": {
         "buildkit": true

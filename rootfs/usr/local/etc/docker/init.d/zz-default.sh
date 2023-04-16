@@ -123,9 +123,10 @@ __update_conf_files() {
   [ "$IS_DATABASE_SERVICE" = "yes" ] && APPLICATION_DIRS="$APPLICATION_DIRS $DATABASE_DIR" && { [ -d "$DATABASE_DIR" ] || { (echo "Creating directory $DATABASE_DIR with permissions 777" && mkdir -p "$DATABASE_DIR" && chmod -f 777 "$DATABASE_DIR") |& tee -a "$LOG_DIR/init.txt" &>/dev/null; }; }
   # copy config files to system
   __file_copy "$CONF_DIR/." "$ETC_DIR/" |& tee -a "$LOG_DIR/init.txt" &>/dev/null
-
-  if [ ! -f "$COOLIFY_ENV_FILE" ]; then
-    cat <<EOF | tee "$COOLIFY_ENV_FILE" >/dev/null
+  if [ -f "$CONF_DIR/env" ]; then
+    cp -Rf "$CONF_DIR/env" "$COOLIFY_ENV_FILE"
+  elif [ ! -f "$COOLIFY_ENV_FILE" ]; then
+    cat <<EOF | tee "$COOLIFY_ENV_FILE" "$CONF_DIR/env" >/dev/null
 COOLIFY_HOSTED_ON="${COOLIFY_HOSTED_ON:-docker}"
 COOLIFY_AUTO_UPDATE="${COOLIFY_AUTO_UPDATE:-false}"
 COOLIFY_APP_ID="$COOLIFY_APP_ID"
@@ -173,8 +174,8 @@ __post_execute() {
   sleep 60                           # how long to wait before executing
   echo "Running post commands"       # message
   # execute commands
-  docker compose -f "/root/coolify.yaml" up
-  # docker run -tid --env-file "$COOLIFY_CONF_FOUND" -v /var/run/docker.sock:/var/run/docker.sock -v  $IMAGE /bin/sh -c "env | grep COOLIFY > .env && docker compose up -d --force-recreate
+  docker compose -f "/root/coolify.yaml" up | tee -a /dev/stdout
+  # docker run -tid --env-file "$COOLIFY_ENV_FILE" -v /var/run/docker.sock:/var/run/docker.sock -v '/data/db/sqlite3/coolify:/app/db' -e COOLIFY_DATABASE_URL=file:${COOLIFY_DATABASE_URL} $COLLIFY_IMAGE /bin/sh -c "env | grep COOLIFY > .env && docker compose up -d --force-recreate"
   return $exitCode
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
