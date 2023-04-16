@@ -49,6 +49,7 @@ __update_conf_files() {
   [ -z "$(type -p 'named' 2>/dev/null)" ] && echo "the program named is not installed" && exit 1
   local zone_files="" serial=""
   serial="$(date +'%Y%m%d%S')"
+  local ipaddr="${CONTAINER_IP4_ADDRESS:-127.0.0.1}"
   #
   if [ -d "$conf_dir" ]; then
     cp -Rf "$conf_dir/." "$etc_dir/"
@@ -76,13 +77,26 @@ __update_conf_files() {
   done
   #
   zone_files="$(find "$data_dir/zones/" -type f | wc -l)"
-  if [ $zone_files = 0 ] && [ ! -f "$data_dir/zones/$HOSTNAME.zone" ]; then
+  if [ ! -f "$data_dir/zones/$HOSTNAME.zone" ]; then
     cat <<EOF | tee "$data_dir/zones/$HOSTNAME.zone" &>/dev/null
-; config for $HOSTNAME
-@                         IN  SOA     $HOSTNAME. root.$HOSTNAME. ( $serial 10800 3600 1209600 38400)
-                          IN  NS      $HOSTNAME.
-$HOSTNAME.                IN  A       $CONTAINER_IP4_ADDRESS
-*                         IN  CNAME   $HOSTNAME.
+; Bind DNS settings for $HOSTNAME
+;  ********** begin soa settings                      **********
+\$ORIGIN                                                        $HOSTNAME.
+\$TTL                                                           38400
+@                                         IN       SOA          root.$HOSTNAME. ( $serial 10800 3600 1209600 38400 )
+;  ********** end soa settings                        **********
+
+;  ********** begin nameserver settings               **********
+@                                         IN       NS          $HOSTNAME.
+;  ********** end nameserver settings                 **********
+
+;  ********** begin host settings                     **********
+@                                         IN       A           $ipaddr
+*                                         IN       A           $ipaddr
+;  ********** end host settings                       **********
+;  ********** begin user defined settings             **********
+localhost                                 IN       A            127.0.0.1
+;  ********** end user defined settings               **********
 
 EOF
   fi
