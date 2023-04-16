@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-ARCH=$(uname -m | tr '[:upper:]' '[:lower:]')
+
 if [ ! -x "$HOME/.docker/cli-plugins/docker-compose" ]; then
   echo "Installing Docker Compose CLI plugin."
   if [ ! -d ~/.docker/cli-plugins/ ]; then

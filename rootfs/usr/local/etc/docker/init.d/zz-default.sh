@@ -66,10 +66,13 @@ IS_WEB_SERVER="no"
 IS_DATABASE_SERVICE="no"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional variables
-COOLIFY_SECRET_KEY="${ENV_COOLIFY_SECRET_KEY:-$(__random_password 32)}"
-COOLIFY_DATABASE_URL="${ENV_COOLIFY_DATABASE_URL:-$DATABASE_DIR/prod.db}"
-COOLIFY_WHITE_LABELED_ICON="${ENV_COOLIFY_WHITE_LABELED_ICON:-$COOLIFY_WHITE_LABELED_ICON}"
-export COOLIFY_SECRET_KEY COOLIFY_DATABASE_URL COOLIFY_WHITE_LABELED_ICON
+COOLIFY_ENV_FILE="${COOLIFY_ENV_FILE:-/root/coolify.env}"
+COLLIFY_IMAGE="${COLLIFY_IMAGE:-ghcr.io/coollabsio/coolify:latest}"
+COOLIFY_APP_ID="${COOLIFY_APP_ID:-$(cat /proc/sys/kernel/random/uuid)}"
+COOLIFY_DATABASE_URL="${COOLIFY_DATABASE_URL:-$DATABASE_DIR/prod.db}"
+COOLIFY_WHITE_LABELED_ICON="${COOLIFY_WHITE_LABELED_ICON:-$COOLIFY_WHITE_LABELED_ICON}"
+COOLIFY_SECRET_KEY="${COOLIFY_SECRET_KEY:-$(echo $(($(date +%s%N) / 1000000)) | sha256sum | base64 | head -c 32)}"
+export COOLIFY_ENV_FILE COLLIFY_IMAGE COOLIFY_APP_ID COOLIFY_DATABASE_URL COOLIFY_WHITE_LABELED_ICON COOLIFY_SECRET_KEY
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # usernames
 user_name="${COOLIFY_USER_NAME:-}"           # normal user name
@@ -120,7 +123,19 @@ __update_conf_files() {
   [ "$IS_DATABASE_SERVICE" = "yes" ] && APPLICATION_DIRS="$APPLICATION_DIRS $DATABASE_DIR" && { [ -d "$DATABASE_DIR" ] || { (echo "Creating directory $DATABASE_DIR with permissions 777" && mkdir -p "$DATABASE_DIR" && chmod -f 777 "$DATABASE_DIR") |& tee -a "$LOG_DIR/init.txt" &>/dev/null; }; }
   # copy config files to system
   __file_copy "$CONF_DIR/." "$ETC_DIR/" |& tee -a "$LOG_DIR/init.txt" &>/dev/null
-  # replace variables
+
+  if [ ! -f "$COOLIFY_ENV_FILE" ]; then
+    cat <<EOF | tee "$COOLIFY_ENV_FILE" >/dev/null
+COOLIFY_HOSTED_ON="${COOLIFY_HOSTED_ON:-docker}"
+COOLIFY_AUTO_UPDATE="${COOLIFY_AUTO_UPDATE:-false}"
+COOLIFY_APP_ID="$COOLIFY_APP_ID"
+COOLIFY_CONF_FOUND="$COOLIFY_ENV_FILE"
+COOLIFY_SECRET_KEY="$COOLIFY_SECRET_KEY"
+COOLIFY_WHITE_LABELED_ICON="$COOLIFY_WHITE_LABELED_ICON"
+COOLIFY_DATABASE_URL="/data/db/sqlite3/coolify/prod.db"
+
+EOF
+  fi
 
   # unset unneeded variables
   unset application_files filedirs
@@ -159,6 +174,7 @@ __post_execute() {
   echo "Running post commands"       # message
   # execute commands
   docker compose -f "/root/coolify.yaml" up
+  # docker run -tid --env-file "$COOLIFY_CONF_FOUND" -v /var/run/docker.sock:/var/run/docker.sock -v  $IMAGE /bin/sh -c "env | grep COOLIFY > .env && docker compose up -d --force-recreate
   return $exitCode
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
