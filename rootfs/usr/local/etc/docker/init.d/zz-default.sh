@@ -50,7 +50,7 @@ DATABASE_DIR="${DATABASE_DIR_COOLIFY:-/data/db/sqlite3/coolify}"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # port which service is listening on
-SERVICE_PORT="3000,9000"
+SERVICE_PORT="3000,9000-9100"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # execute command variables
 SERVICE_UID="0"                         # set the user id
@@ -130,7 +130,6 @@ __update_conf_files() {
 COOLIFY_HOSTED_ON="${COOLIFY_HOSTED_ON:-docker}"
 COOLIFY_AUTO_UPDATE="${COOLIFY_AUTO_UPDATE:-false}"
 COOLIFY_APP_ID="$COOLIFY_APP_ID"
-COOLIFY_CONF_FOUND="$COOLIFY_ENV_FILE"
 COOLIFY_SECRET_KEY="$COOLIFY_SECRET_KEY"
 COOLIFY_WHITE_LABELED_ICON="$COOLIFY_WHITE_LABELED_ICON"
 COOLIFY_DATABASE_URL="/data/db/sqlite3/coolify/prod.db"

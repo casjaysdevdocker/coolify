@@ -16,10 +16,10 @@ services:
       - COOLIFY_WHITE_LABELED_ICON=${COOLIFY_WHITE_LABELED_ICON}
     ports:
       - '3000:3000'
-      - '9001:9100'
+      - '9000:9100'
     volumes:
       - '/config/ssl:/app/ssl'
-      - '/config/traefik:/etc/traefik/acme'
+      - '/config/traefik:/etc/traefik'
       - '/config/letsencrypt:/etc/letsencrypt'
       - '/data/logs/coolify:/app/logs'
       - '/data/db/sqlite3/coolify:/app/db'
