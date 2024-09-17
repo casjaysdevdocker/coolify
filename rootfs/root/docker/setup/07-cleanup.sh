@@ -28,6 +28,8 @@ exitCode=0
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Predifined actions
 [ -d "/tmp" ] && rm -Rf "/tmp"/*
+[ -d "/run/openrc" ] || mkdir -p "/run/openrc"
+[ -f "/run/openrc/softlevel" ] || touch "/run/openrc/softlevel"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main script
 
