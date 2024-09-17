@@ -53,7 +53,7 @@ ARG PHP_VERSION
 ARG PHP_SERVER
 ARG SHELL_OPTS
 
-ARG PACK_LIST="openrc curl wget git jq docker docker-cli-compose "
+ARG PACK_LIST="openrc curl wget git jq docker docker-cli-compose openssh-server openssh "
 
 ENV ENV=~/.profile
 ENV SHELL="/bin/sh"
