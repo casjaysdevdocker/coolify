@@ -24,10 +24,37 @@ set -o pipefail
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set env variables
 exitCode=0
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Predifined actions
+cat <<EOF >"/etc/rc.local"
+#!/bin/bash
+# THIS FILE IS ADDED FOR COMPATIBILITY PURPOSES
 
+[ ! -f "/data/.installed" ] && [ -f "/usr/local/bin/coolify-setup" ] && export COOLIFY_INIT=yes;bash -c "/usr/local/bin/coolify-setup"
+
+touch /var/lock/subsys/local
+exit 0
+EOF
+cat <<HERE >"/etc/systemd/system/rc-local.service"
+[Unit]
+Description=/etc/rc.local
+ConditionPathExists=/etc/rc.local
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+HERE
+sudo chmod +x /etc/rc.local
+systemctl daemon-reload
+systemctl enable rc-local
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main script
 
