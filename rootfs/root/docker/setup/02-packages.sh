@@ -27,25 +27,13 @@ exitCode=0
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Predifined actions
-sed -i 's/^\(tty\d\:\:\)/#\1/g' /etc/inittab &&
-  sed -i \
-    -e 's/#rc_sys=".*"/rc_sys="docker"/g' \
-    -e 's/#rc_env_allow=".*"/rc_env_allow="\*"/g' \
-    -e 's/#rc_crashed_stop=.*/rc_crashed_stop=NO/g' \
-    -e 's/#rc_crashed_start=.*/rc_crashed_start=YES/g' \
-    -e 's/#rc_provide=".*"/rc_provide="loopback net"/g' \
-    /etc/rc.conf &&
-  rm -f /etc/init.d/hwdrivers \
-    /etc/init.d/hwclock \
-    /etc/init.d/hwdrivers \
-    /etc/init.d/modules \
-    /etc/init.d/modules-load \
-    /etc/init.d/modloop &&
-  sed -i 's/cgroup_add_service /# cgroup_add_service /g' /lib/rc/sh/openrc-run.sh &&
-  sed -i 's/VSERVER/DOCKER/Ig' /lib/rc/sh/init.sh
-for service in cgroups sshd docker; do
-  rc-update add $service
-done
+apt-get update
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -q -LSsf "https://download.docker.com/linux/debian/gpg" -o "/etc/apt/keyrings/docker.asc"
+chmod a+r /etc/apt/keyrings/docker.asc
+printf '%s %s\n' "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian" "$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | tee /etc/apt/sources.list.d/docker.list >/dev/null
+apt-get update
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main script
 

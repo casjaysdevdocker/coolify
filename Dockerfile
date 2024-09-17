@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
-# Docker image for coolify using the alpine template
+# Docker image for coolify using the debian template
 ARG IMAGE_NAME="coolify"
 ARG PHP_SERVER="coolify"
-ARG BUILD_DATE="202409171130"
+ARG BUILD_DATE="202409171432"
 ARG LANGUAGE="en_US.UTF-8"
 ARG TIMEZONE="America/New_York"
 ARG WWW_ROOT_DIR="/usr/share/httpd/default"
@@ -10,6 +10,7 @@ ARG DEFAULT_FILE_DIR="/usr/local/share/template-files"
 ARG DEFAULT_DATA_DIR="/usr/local/share/template-files/data"
 ARG DEFAULT_CONF_DIR="/usr/local/share/template-files/config"
 ARG DEFAULT_TEMPLATE_DIR="/usr/local/share/template-files/defaults"
+ARG DEBIAN_FRONTEND=noninteractive
 
 ARG USER="root"
 ARG SHELL_OPTS="set -e -o pipefail"
@@ -52,16 +53,19 @@ ARG NODE_MANAGER
 ARG PHP_VERSION
 ARG PHP_SERVER
 ARG SHELL_OPTS
+ARG DEBIAN_FRONTEND
 
-ARG PACK_LIST="openrc curl wget git jq docker docker-cli-compose openssh-server openssh "
+ARG PACK_LIST="systemd systemd-sysv cron curl wget git jq openssh-server "
 
 ENV ENV=~/.profile
 ENV SHELL="/bin/sh"
 ENV TZ="${TIMEZONE}"
 ENV TIMEZONE="${TZ}"
 ENV LANG="${LANGUAGE}"
+ENV LC_ALL="${LANGUAGE}"
 ENV TERM="xterm-256color"
 ENV HOSTNAME="casjaysdevdocker-coolify"
+ENV DEBIAN_FRONTEND="${DEBIAN_FRONTEND}"
 
 USER ${USER}
 WORKDIR /root
@@ -239,6 +243,7 @@ ENV NODE_MANAGER="${NODE_MANAGER}"
 ENV PHP_VERSION="${PHP_VERSION}"
 ENV DISTRO_VERSION="${IMAGE_VERSION}"
 ENV WWW_ROOT_DIR="${WWW_ROOT_DIR}"
+ENV container=docker
 
 COPY --from=build /. /
 
@@ -246,6 +251,7 @@ VOLUME [ "/config","/data" ]
 
 EXPOSE ${SERVICE_PORT} ${ENV_PORTS}
 
+STOPSIGNAL SIGRTMIN+3
+
 CMD [ "/sbin/init" ]
-#ENTRYPOINT [ "tini","--","/usr/local/bin/entrypoint.sh" ]
-HEALTHCHECK --start-period=10m --interval=5m --timeout=15s CMD [ "wget -qO- http://localhost:80/ping || exit 1" ]
+HEALTHCHECK --start-period=10m --interval=5m --timeout=15s CMD [ "curl", "-qLSsf", "http://localhost:8000" ]

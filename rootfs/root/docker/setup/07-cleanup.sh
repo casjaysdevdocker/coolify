@@ -28,8 +28,8 @@ exitCode=0
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Predifined actions
 [ -d "/tmp" ] && rm -Rf "/tmp"/*
-[ -d "/run/openrc" ] || mkdir -p "/run/openrc"
-[ -f "/run/openrc/softlevel" ] || touch "/run/openrc/softlevel"
+rm -f /etc/machine-id /var/lib/dbus/machine-id
+systemctl mask -- dev-hugepages.mount sys-fs-fuse-connections.mount
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main script
 
