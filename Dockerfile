@@ -25,7 +25,7 @@ ARG IMAGE_REPO="casjaysdevdocker/coolify"
 ARG IMAGE_VERSION="latest"
 ARG CONTAINER_VERSION=""
 
-ARG PULL_URL="casjaysdev/alpine"
+ARG PULL_URL="casjaysdev/debian"
 ARG DISTRO_VERSION="${IMAGE_VERSION}"
 ARG BUILD_VERSION="${BUILD_DATE}"
 
