@@ -55,7 +55,7 @@ ARG PHP_SERVER
 ARG SHELL_OPTS
 ARG DEBIAN_FRONTEND
 
-ARG PACK_LIST="systemd systemd-sysv cron curl wget git jq openssh-server "
+ARG PACK_LIST="curl wget git jq openssh-server "
 
 ENV ENV=~/.profile
 ENV SHELL="/bin/sh"
@@ -74,7 +74,7 @@ COPY ./rootfs/usr/local/bin/. /usr/local/bin/
 
 RUN set -e; \
   echo "Setting up prerequisites"; \
-  true
+  apt update && apt install -yy systemd systemd-sysv cron
 
 ENV SHELL="/bin/bash"
 SHELL [ "/bin/bash", "-c" ]
